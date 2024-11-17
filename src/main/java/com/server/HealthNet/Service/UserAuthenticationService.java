@@ -3,6 +3,10 @@ package com.server.HealthNet.Service;
 import com.server.HealthNet.Model.UserAuthentication;
 import com.server.HealthNet.Repository.UserAuthenticationRepository;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +18,13 @@ public class UserAuthenticationService {
     private final UserAuthenticationRepository userAuthenticationRepository;
 
     private BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder(6);
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+
+    @Autowired
+    private JWTservice jwTservice;
 
 
     public UserAuthenticationService(UserAuthenticationRepository userAuthenticationRepository) {
@@ -40,5 +51,12 @@ public class UserAuthenticationService {
 
     public int deleteUser(String username) {
         return userAuthenticationRepository.deleteByUsername(username);
+    }
+
+    public String verify(UserAuthentication userAuthentication) {
+        Authentication authentication = authenticationManager.
+        authenticate(new UsernamePasswordAuthenticationToken(userAuthentication.getUsername(), userAuthentication.getPassword()));
+        return authentication.isAuthenticated()? jwTservice.
+        generateToken(userAuthentication.getUsername(),userAuthentication.getRole().toString()) : "Not Authenticated";
     }
 }

@@ -17,7 +17,7 @@ public class UserAuthenticationController {
         this.userAuthenticationService = userAuthenticationService;
     }
 
-    @PostMapping
+    @PostMapping("/register")
     public ResponseEntity<Void> createUser(@RequestBody UserAuthentication userAuthentication) {
         userAuthenticationService.createUser(userAuthentication);
         return ResponseEntity.status(201).build();
@@ -36,7 +36,7 @@ public class UserAuthenticationController {
 
     @PutMapping("/{username}")
     public ResponseEntity<Void> updateUser(@PathVariable String username, @RequestBody UserAuthentication userAuthentication) {
-        userAuthentication.setUsername(username); // Ensure the username is set to match the URL
+        userAuthentication.setUsername(username); 
         userAuthenticationService.updateUser(userAuthentication);
         return ResponseEntity.noContent().build();
     }
@@ -45,5 +45,10 @@ public class UserAuthenticationController {
     public ResponseEntity<Void> deleteUser(@PathVariable String username) {
         userAuthenticationService.deleteUser(username);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/login")
+    public String login(@RequestBody UserAuthentication userAuthentication){
+        return userAuthenticationService.verify(userAuthentication);
     }
 }

@@ -47,4 +47,12 @@ public class UserAuthentication {
     public void setPersonId(Long personId) {
         this.personId = personId;
     }
+
+    @Override
+    public String toString() {
+        return "UserAuthentication [username=" + username + ", password=" + password + ", role=" + role + ", personId="
+                + personId + "]";
+    }
+
+    
 }
