@@ -1,9 +1,6 @@
 # Use an OpenJDK image
 FROM openjdk:21-jdk-slim
 
-# Set the working directory
-WORKDIR /HealthNet
-
 # Copy the Maven project files into the container
 COPY . .
 
