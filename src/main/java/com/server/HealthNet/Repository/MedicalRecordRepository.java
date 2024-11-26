@@ -50,4 +50,9 @@ public class MedicalRecordRepository {
         String sql = "DELETE FROM medical_records WHERE record_id = ?";
         return jdbcTemplate.update(sql, id);
     }
+    
+    public List<MedicalRecord> findByPatientId(Long patientId) {
+        String sql = "SELECT * FROM medical_records WHERE patient_id = ?";
+        return jdbcTemplate.query(sql, this::mapRowToMedicalRecord, patientId);
+    }
 }

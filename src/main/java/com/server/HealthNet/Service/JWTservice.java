@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.crypto.KeyGenerator;
@@ -36,13 +37,19 @@ public class JWTservice {
     
         public String generateToken(String username,String Role) {
             Map<String,Object> claims = new HashMap<>();
-            claims.put("role", Role);
+            claims.put("role", "ROLE_" + Role);
             return Jwts.builder().claims().add(claims).
             subject(username).
             issuedAt(new Date(System.currentTimeMillis())).
             expiration(new Date(System.currentTimeMillis()+24*60*60*100)).and()
             .signWith(getKey()).compact();
         }
+
+        public List<String> extractRoles(String token) {
+            Claims claims = extractAllClaims(token);
+            return claims.get("role", List.class); // Cast "roles" claim to a List<String>
+        }
+
     
         private SecretKey getKey() {
             byte[] keybytes = Decoders.BASE64.decode(mykey);

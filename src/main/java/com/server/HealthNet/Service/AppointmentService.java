@@ -4,6 +4,7 @@ import com.server.HealthNet.Model.Appointment;
 import com.server.HealthNet.Repository.AppointmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
@@ -30,5 +31,23 @@ public class AppointmentService {
 
     public int deleteAppointment(Long id) {
         return appointmentRepository.deleteById(id);
+    }
+
+    public List<Appointment> getallbydoctorid(Long id) {
+        return appointmentRepository.findAllByDoctorId(id);
+    }
+
+    public List<Appointment> getallbypatientid(Long id) {
+        return appointmentRepository.findAllByPatientId(id);
+    }
+
+    // New method to approve an appointment
+    public int approveAppointment(Long id) {
+        Appointment appointment = appointmentRepository.findById(id);
+        if (appointment != null) {
+            appointment.setIs_approved(true); // Approve the appointment
+            return appointmentRepository.update(appointment);
+        }
+        return 0; // Return 0 if appointment not found
     }
 }

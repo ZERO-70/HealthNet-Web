@@ -31,4 +31,8 @@ public class MedicalRecordService {
     public int deleteMedicalRecord(Long id) {
         return medicalRecordRepository.deleteById(id);
     }
+
+    public List<MedicalRecord> getmyMedicalRecords(Long id){
+        return medicalRecordRepository.findByPatientId(id);
+    }
 }

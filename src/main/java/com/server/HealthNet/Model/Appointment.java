@@ -5,16 +5,16 @@ import java.time.LocalTime;
 
 public class Appointment {
 
-    
     public Appointment() {
     }
-    
-    public Appointment(Long patient_id, Long doctor_id, LocalDate date, LocalTime time, boolean is_pending) {
+
+    public Appointment(Long patient_id, Long doctor_id, LocalDate date, LocalTime time, boolean is_pending, boolean is_approved) {
         this.patient_id = patient_id;
         this.doctor_id = doctor_id;
         this.date = date;
         this.time = time;
         this.is_pending = is_pending;
+        this.is_approved = is_approved;
     }
 
     private Long appointment_id;
@@ -23,6 +23,8 @@ public class Appointment {
     private LocalDate date;
     private LocalTime time;
     private boolean is_pending;
+    private boolean is_approved; // New attribute
+
     public Long getAppointment_id() {
         return appointment_id;
     }
@@ -71,5 +73,12 @@ public class Appointment {
         this.is_pending = is_pending;
     }
 
+    // Getter and setter for is_approved
+    public boolean isIs_approved() {
+        return is_approved;
+    }
 
+    public void setIs_approved(boolean is_approved) {
+        this.is_approved = is_approved;
+    }
 }

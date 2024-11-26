@@ -4,6 +4,7 @@ import com.server.HealthNet.Model.Appointment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -24,6 +25,7 @@ public class AppointmentRepository {
         appointment.setDate(rs.getObject("date", LocalDate.class));
         appointment.setTime(rs.getObject("time", LocalTime.class));
         appointment.setIs_pending(rs.getBoolean("is_pending"));
+        appointment.setIs_approved(rs.getBoolean("is_approved")); // Added mapping for is_approved
         return appointment;
     }
 
@@ -38,19 +40,29 @@ public class AppointmentRepository {
     }
 
     public int save(Appointment appointment) {
-        String sql = "INSERT INTO appointments (patient_id, doctor_id, date, time, is_pending) VALUES (?, ?, ?, ?, ?)";
-        return jdbcTemplate.update(sql, appointment.getPatient_id(), appointment.getDoctor_id(), 
-                appointment.getDate(), appointment.getTime(), appointment.isIs_pending());
+        String sql = "INSERT INTO appointments (patient_id, doctor_id, date, time, is_pending, is_approved) VALUES (?, ?, ?, ?, ?, ?)";
+        return jdbcTemplate.update(sql, appointment.getPatient_id(), appointment.getDoctor_id(),
+                appointment.getDate(), appointment.getTime(), appointment.isIs_pending(), appointment.isIs_approved()); // Added is_approved
     }
 
     public int update(Appointment appointment) {
-        String sql = "UPDATE appointments SET patient_id = ?, doctor_id = ?, date = ?, time = ?, is_pending = ? WHERE appointment_id = ?";
-        return jdbcTemplate.update(sql, appointment.getPatient_id(), appointment.getDoctor_id(), 
-                appointment.getDate(), appointment.getTime(), appointment.isIs_pending(), appointment.getAppointment_id());
+        String sql = "UPDATE appointments SET patient_id = ?, doctor_id = ?, date = ?, time = ?, is_pending = ?, is_approved = ? WHERE appointment_id = ?";
+        return jdbcTemplate.update(sql, appointment.getPatient_id(), appointment.getDoctor_id(),
+                appointment.getDate(), appointment.getTime(), appointment.isIs_pending(), appointment.isIs_approved(), appointment.getAppointment_id()); // Added is_approved
     }
 
     public int deleteById(Long id) {
         String sql = "DELETE FROM appointments WHERE appointment_id = ?";
         return jdbcTemplate.update(sql, id);
+    }
+
+    public List<Appointment> findAllByPatientId(Long patientId) {
+        String sql = "SELECT * FROM appointments WHERE patient_id = ?";
+        return jdbcTemplate.query(sql, this::mapRowToAppointment, patientId);
+    }
+
+    public List<Appointment> findAllByDoctorId(Long doctorId) {
+        String sql = "SELECT * FROM appointments WHERE doctor_id = ?";
+        return jdbcTemplate.query(sql, this::mapRowToAppointment, doctorId);
     }
 }
