@@ -15,7 +15,7 @@ public class PersonRepository {
     }
 
     public List<Person> findAll() {
-        String sql = "SELECT * FROM Person";
+        String sql = "SELECT * FROM person"; 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             Person person = new Person();
             person.setId(rs.getLong("person_id"));
@@ -25,13 +25,12 @@ public class PersonRepository {
             person.setBirthdate(rs.getDate("birthdate").toLocalDate());
             person.setContact_info(rs.getString("contact_info"));
             person.setAddress(rs.getString("address"));
-            // Handle image and other fields
             return person;
         });
     }
 
     public Person findById(Long id) {
-        String sql = "SELECT * FROM Person WHERE person_id = ?";
+        String sql = "SELECT * FROM person WHERE person_id = ?"; 
         return jdbcTemplate.queryForObject(sql, new Object[]{id}, (rs, rowNum) -> {
             Person person = new Person();
             person.setId(rs.getLong("person_id"));
@@ -47,18 +46,17 @@ public class PersonRepository {
     }
 
     public int save(Person person) {
-        String sql = "INSERT INTO Person (name, gender, age, birthdate, contact_info, address) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO person (name, gender, age, birthdate, contact_info, address) VALUES (?, ?, ?, ?, ?, ?)"; // Table name in lowercase
         return jdbcTemplate.update(sql, person.getName(), person.getGender(), person.getAge(), person.getBirthdate(), person.getContact_info(), person.getAddress());
-        // Handle image and other fields
     }
 
     public int update(Person person) {
-        String sql = "UPDATE Person SET name = ?, gender = ?, age = ?, birthdate = ?, contact_info = ?, address = ? WHERE person_id = ?";
+        String sql = "UPDATE person SET name = ?, gender = ?, age = ?, birthdate = ?, contact_info = ?, address = ? WHERE person_id = ?"; // Table name in lowercase
         return jdbcTemplate.update(sql, person.getName(), person.getGender(), person.getAge(), person.getBirthdate(), person.getContact_info(), person.getAddress(), person.getId());
     }
 
     public int deleteById(Long id) {
-        String sql = "DELETE FROM Person WHERE person_id = ?";
+        String sql = "DELETE FROM person WHERE person_id = ?"; 
         return jdbcTemplate.update(sql, id);
     }
 }
