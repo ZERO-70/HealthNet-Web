@@ -25,6 +25,6 @@ public class HomeController {
         if (userAuthentication == null) {
             return "Welcom to HealthNet , you are not registered";
         }
-        return "Welcom to HealthNet , you are " + userAuthentication.getRole();
+        return "Welcom to HealthNet , you are " + userAuthentication.getRole().toString();
     }
 }
