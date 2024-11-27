@@ -1,6 +1,4 @@
 package com.server.HealthNet.SecurityConfig;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +13,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
 
 import com.server.HealthNet.Service.CustomUserDetailsService;
 
@@ -29,23 +26,17 @@ public class SecurityConfig{
 
     @Autowired
     private JwtFilter jwtFilter;
-@Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http.csrf().disable()
-        .cors().configurationSource(request -> {
-            CorsConfiguration cors = new CorsConfiguration();
-            cors.setAllowedOrigins(List.of("*")); // Adjust to your domain in production
-            cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-            cors.setAllowedHeaders(List.of("*"));
-            return cors;
-        })
-        .and()
-        .authorizeHttpRequests()
-        .requestMatchers("/user_authentication/register", "/user_authentication/login", "/home").permitAll()
-        .anyRequest().authenticated();
-    return http.build();
-}
-
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http)throws Exception{
+        http.csrf(customizer->customizer.disable());
+        http.authorizeHttpRequests(request->request.
+        requestMatchers("/user_authentication/register","/user_authentication/login","/home")
+        .permitAll()
+        .anyRequest().authenticated());
+        http.httpBasic(Customizer.withDefaults()).
+        addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        return http.build();
+    }
 
     @Bean
     public AuthenticationProvider authenticationProvider(){

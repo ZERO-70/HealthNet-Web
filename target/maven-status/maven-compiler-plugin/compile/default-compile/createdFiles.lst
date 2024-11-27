@@ -15,6 +15,7 @@ com\server\HealthNet\Repository\StaffRepository.class
 com\server\HealthNet\Service\DoctorService.class
 com\server\HealthNet\Controller\InventoryController.class
 com\server\HealthNet\Model\Person.class
+com\server\HealthNet\Controller\HomeController.class
 com\server\HealthNet\Repository\DoctorRepository.class
 com\server\HealthNet\Service\CustomUserDetailsService.class
 com\server\HealthNet\Model\Patient.class
@@ -46,6 +47,7 @@ com\server\HealthNet\Repository\AvalibilityRepository$AvalibilityRowMapper.class
 com\server\HealthNet\Model\UserAuthentication.class
 com\server\HealthNet\Controller\UserAuthenticationController.class
 com\server\HealthNet\Repository\PatientRepository$1.class
+com\server\HealthNet\Repository\UserAuthenticationRepository$UserAuthenticationRowMapper.class
 com\server\HealthNet\SecurityConfig\JwtFilter.class
 com\server\HealthNet\Controller\DoctorController.class
 com\server\HealthNet\Service\UserAuthenticationService.class
