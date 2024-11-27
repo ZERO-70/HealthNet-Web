@@ -21,6 +21,9 @@ public class HomeController {
     @GetMapping
     public String welcome(){
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        System.out.println("ACESSSSED THEEEE HOMEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+        System.out.println();
+        System.out.println();
         UserAuthentication userAuthentication = userAuthenticationService.getUserByUsername(username);
         if (userAuthentication == null) {
             return "Welcom to HealthNet , you are not registered";
