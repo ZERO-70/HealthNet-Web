@@ -22,6 +22,11 @@ public class AppointmentService {
     }
 
     public int createAppointment(Appointment appointment) {
+        if (appointmentRepository.isAppointmentOverlapping(
+            appointment.getDoctor_id(),appointment.getDate(),appointment.getStartTime(),appointment.getEndTime())){
+            return 2;
+        }
+        appointment.setIs_approved(false); 
         return appointmentRepository.save(appointment);
     }
 

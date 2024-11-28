@@ -16,6 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/medical_record")
+@CrossOrigin
 public class MedicalRecordController {
 
     @Autowired

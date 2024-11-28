@@ -17,6 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/appointment")
+@CrossOrigin
 public class AppointmentController {
 
     @Autowired
@@ -40,7 +41,11 @@ public class AppointmentController {
     @PostMapping
     @PreAuthorize("hasRole('PATIENT')")
     public ResponseEntity<String> createAppointment(@RequestBody Appointment appointment) {
-        return appointmentService.createAppointment(appointment) > 0
+        int res = appointmentService.createAppointment(appointment);
+        if (res == 2){
+            return new ResponseEntity<>("Appointment Time Conflict", HttpStatus.CONFLICT);
+        }
+        return res > 0
                 ? new ResponseEntity<>("Appointment Insertion successfully", HttpStatus.OK)
                 : new ResponseEntity<>("Appointment Insertion failed", HttpStatus.NOT_FOUND);
     }

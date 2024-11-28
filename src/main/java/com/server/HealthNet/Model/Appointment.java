@@ -8,11 +8,12 @@ public class Appointment {
     public Appointment() {
     }
 
-    public Appointment(Long patient_id, Long doctor_id, LocalDate date, LocalTime time, boolean is_pending, boolean is_approved) {
+    public Appointment(Long patient_id, Long doctor_id, LocalDate date, LocalTime startTime, LocalTime endTime, boolean is_pending, boolean is_approved) {
         this.patient_id = patient_id;
         this.doctor_id = doctor_id;
         this.date = date;
-        this.time = time;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.is_pending = is_pending;
         this.is_approved = is_approved;
     }
@@ -21,9 +22,10 @@ public class Appointment {
     private Long patient_id;
     private Long doctor_id;
     private LocalDate date;
-    private LocalTime time;
+    private LocalTime startTime; // Renamed
+    private LocalTime endTime; // New attribute
     private boolean is_pending;
-    private boolean is_approved; // New attribute
+    private boolean is_approved;
 
     public Long getAppointment_id() {
         return appointment_id;
@@ -57,12 +59,20 @@ public class Appointment {
         this.date = date;
     }
 
-    public LocalTime getTime() {
-        return time;
+    public LocalTime getStartTime() {
+        return startTime;
     }
 
-    public void setTime(LocalTime time) {
-        this.time = time;
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
     }
 
     public boolean isIs_pending() {
@@ -73,7 +83,6 @@ public class Appointment {
         this.is_pending = is_pending;
     }
 
-    // Getter and setter for is_approved
     public boolean isIs_approved() {
         return is_approved;
     }

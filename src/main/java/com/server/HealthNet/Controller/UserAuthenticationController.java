@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/user_authentication")
 public class UserAuthenticationController {
 
@@ -82,6 +83,10 @@ public class UserAuthenticationController {
 
     @PostMapping("/login")
     public String login(@RequestBody UserAuthentication userAuthentication){
+        System.out.println("ACESSSSED THEEEEEEEE LOGINNNNNNNNNNNNNNN");
+        System.out.println();
+        System.out.println();
+
         return userAuthenticationService.verify(userAuthentication);
-    }
+    } 
 }

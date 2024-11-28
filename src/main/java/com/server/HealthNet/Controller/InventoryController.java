@@ -13,6 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/inventory")
 @PreAuthorize("hasRole('STAFF') or hasRole('ADMIN')")
+@CrossOrigin
 public class InventoryController {
 
     @Autowired
