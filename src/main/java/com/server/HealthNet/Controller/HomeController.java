@@ -28,8 +28,8 @@ public class HomeController {
         System.out.println();
         UserAuthentication userAuthentication = userAuthenticationService.getUserByUsername(username);
         if (userAuthentication == null) {
-            return "Welcom to HealthNet , you are not registered";
+            return "Welcom to HealthNet------you are not registered";
         }
-        return "Welcom to HealthNet , you are " + userAuthentication.getRole().toString();
+        return "Welcom to HealthNet-------you are " + userAuthentication.getRole().toString();
     }
 }
