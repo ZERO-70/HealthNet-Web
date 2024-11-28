@@ -26,30 +26,37 @@ public class SecurityConfig{
 
     @Autowired
     private JwtFilter jwtFilter;
+
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http)throws Exception{
-        http.csrf(customizer->customizer.disable());
-        http.authorizeHttpRequests(request->request.
-        requestMatchers("/user_authentication/register","/user_authentication/login","/home")
-        .permitAll()
-        .anyRequest().authenticated());
-        http.httpBasic(Customizer.withDefaults()).
-        addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf(csrf -> csrf.disable())
+            .cors(cors -> cors.configurationSource(request -> {
+                var corsConfig = new org.springframework.web.cors.CorsConfiguration();
+                corsConfig.addAllowedOrigin("*"); // Allow all origins (or specify your frontend URL here)
+                corsConfig.addAllowedMethod("*"); // Allow all HTTP methods
+                corsConfig.addAllowedHeader("*"); // Allow all headers
+                corsConfig.setAllowCredentials(true); // Allow credentials
+                return corsConfig;
+            }))
+            .authorizeHttpRequests(requests -> requests
+                .requestMatchers("/user_authentication/register", "/user_authentication/login", "/home").permitAll()
+                .anyRequest().authenticated()
+            )
+            .httpBasic(Customizer.withDefaults())
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider(){
-        DaoAuthenticationProvider Provider = new DaoAuthenticationProvider();
-        Provider.setUserDetailsService(customUserDetailsService);
-        // telling not to use any password encode with passwords having {noop} with it.
-        //PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-        Provider.setPasswordEncoder(new BCryptPasswordEncoder(6));
-        return Provider;
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(customUserDetailsService);
+        provider.setPasswordEncoder(new BCryptPasswordEncoder(6));
+        return provider;
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 }

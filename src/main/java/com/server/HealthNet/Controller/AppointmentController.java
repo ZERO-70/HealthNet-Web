@@ -25,7 +25,7 @@ public class AppointmentController {
     @Autowired
     private UserAuthenticationService userAuthenticationService;
 
-    @GetMapping
+    @GetMapping 
     @PreAuthorize("hasRole('STAFF') or hasRole('ADMIN')")
     public List<Appointment> getAllAppointments() {
         return appointmentService.getAllAppointments();
@@ -98,7 +98,7 @@ public class AppointmentController {
     }
 
 
-    @GetMapping("/getmine")
+    @GetMapping("/getmine") // app.com/appointment/getmine
     public List<Appointment> getmyAppointments() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         UserAuthentication userAuthentication = userAuthenticationService.getUserByUsername(username);
