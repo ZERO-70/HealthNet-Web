@@ -3,8 +3,10 @@ package com.server.HealthNet.Controller;
 import com.server.HealthNet.Model.Role;
 import com.server.HealthNet.Model.UserAuthentication;
 import com.server.HealthNet.Service.UserAuthenticationService;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,18 +25,27 @@ public class UserAuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<Void> createUser(@RequestBody UserAuthentication userAuthentication) {
-        
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        UserAuthentication rAuthentication = userAuthenticationService.getUserByUsername(username);
-
-
-        if (userAuthentication.getRole() == Role.STAFF || userAuthentication.getRole() == Role.ADMIN ){
-            if (rAuthentication.getRole() != Role.ADMIN)
-                return ResponseEntity.status(403).build();
+        // Get authentication from the security context
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    
+        // If the user is authenticated, perform role checks
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            UserAuthentication rAuthentication = userAuthenticationService.getUserByUsername(username);
+    
+            // Only ADMIN can create STAFF or ADMIN roles
+            if (userAuthentication.getRole() == Role.STAFF || userAuthentication.getRole() == Role.ADMIN) {
+                if (rAuthentication == null || rAuthentication.getRole() != Role.ADMIN) {
+                    return ResponseEntity.status(403).build(); // Forbidden
+                }
+            }
         }
+    
+        // Proceed to create the user
         userAuthenticationService.createUser(userAuthentication);
-        return ResponseEntity.status(201).build();
+        return ResponseEntity.status(201).build(); // Created
     }
+    
 
     @GetMapping("/{username}")
     @PreAuthorize("hasRole('ADMIN')")
