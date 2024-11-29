@@ -54,9 +54,17 @@ public class StaffRepository {
     }
 
     public int deleteStaffById(Long staffId) {
-        String sql = "DELETE FROM staff WHERE staff_id = ?";
-        return jdbcTemplate.update(sql, staffId);
+        // First, delete the staff record from the staff table
+        String deleteStaffSql = "DELETE FROM staff WHERE staff_id = ?";
+        int rowsAffected = jdbcTemplate.update(deleteStaffSql, staffId);
+    
+        // Then, delete the associated record from the person table
+        String deletePersonSql = "DELETE FROM person WHERE person_id = ?";
+        rowsAffected += jdbcTemplate.update(deletePersonSql, staffId);
+    
+        return rowsAffected; // Return the total number of rows affected
     }
+    
 
     public int updateStaff(Staff staff) {
         String sql = "UPDATE staff SET proffession = ? WHERE staff_id = ?";

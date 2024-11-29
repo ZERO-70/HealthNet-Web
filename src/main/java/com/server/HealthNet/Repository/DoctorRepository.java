@@ -55,8 +55,15 @@ public class DoctorRepository {
 
     // Method to delete a doctor by their ID
     public int deleteDoctorById(Long doctorId) {
-        String sql = "DELETE FROM doctor WHERE doctor_id = ?";
-        return jdbcTemplate.update(sql, doctorId);
+        // First, delete the doctor record from the doctor table
+        String deleteDoctorSql = "DELETE FROM doctor WHERE doctor_id = ?";
+        int rowsAffected = jdbcTemplate.update(deleteDoctorSql, doctorId);
+    
+        // Then, delete the associated record from the person table
+        String deletePersonSql = "DELETE FROM person WHERE person_id = ?";
+        rowsAffected += jdbcTemplate.update(deletePersonSql, doctorId);
+    
+        return rowsAffected; // Return the total number of rows affected
     }
 
     // Method to update doctor details

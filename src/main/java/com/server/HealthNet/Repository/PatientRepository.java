@@ -55,9 +55,17 @@ public class PatientRepository {
     }
 
     public int deletePatientById(Long patientId) {
-        String sql = "DELETE FROM patient WHERE patient_id = ?";
-        return jdbcTemplate.update(sql, patientId);
+        // First, delete the patient record from the patient table
+        String deletePatientSql = "DELETE FROM patient WHERE patient_id = ?";
+        int rowsAffected = jdbcTemplate.update(deletePatientSql, patientId);
+    
+        // Then, delete the associated record from the person table
+        String deletePersonSql = "DELETE FROM person WHERE person_id = ?";
+        rowsAffected += jdbcTemplate.update(deletePersonSql, patientId);
+    
+        return rowsAffected; // Return the total number of rows affected
     }
+    
 
     public int updatePatient(Patient patient) {
         String sql = "UPDATE patient SET weight = ?, height = ? WHERE patient_id = ?";
