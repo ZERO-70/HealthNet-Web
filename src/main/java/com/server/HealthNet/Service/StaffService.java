@@ -30,7 +30,7 @@ public class StaffService {
         return staffRepository.updateStaff(staff);
     }
 
-    public int addStaff(Staff staff) {
+    public Long addStaff(Staff staff) {
         return staffRepository.saveStaff(staff);
     }
 }

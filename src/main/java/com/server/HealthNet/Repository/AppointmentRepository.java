@@ -88,14 +88,18 @@ public class AppointmentRepository {
         return jdbcTemplate.query(sql, this::mapRowToAppointment, doctorId);
     }
 
-    // Check if there are overlapping appointments for the given date and time range
     public boolean isAppointmentOverlapping(Long doctorId, LocalDate date, LocalTime startTime, LocalTime endTime) {
         String sql = "SELECT COUNT(*) FROM appointments " +
-                     "WHERE doctor_id = ? AND date = ? AND " +
+                     "WHERE doctor_id = ? AND date = ? AND is_pending = TRUE AND " +
                      "((start_time < ? AND end_time > ?) OR " +   // Overlapping
                      "(start_time >= ? AND start_time < ?) OR " + // Starts within
                      "(end_time > ? AND end_time <= ?))";         // Ends within
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, doctorId, date, startTime, endTime, startTime, endTime, startTime, endTime);
-        return count != null && count > 0; // Returns true if any appointment overlaps
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, 
+                doctorId, 
+                date, 
+                startTime, endTime, 
+                startTime, endTime, 
+                startTime, endTime);
+        return count != null && count > 0; // Returns true if any pending appointment overlaps
     }
 }

@@ -22,13 +22,20 @@ public class AppointmentService {
     }
 
     public int createAppointment(Appointment appointment) {
+        long durationMinutes = java.time.Duration.between(appointment.getStartTime(), appointment.getEndTime()).toMinutes();
+        if (durationMinutes < 5 || durationMinutes > 120) {
+            return 3; 
+        }
+    
         if (appointmentRepository.isAppointmentOverlapping(
-            appointment.getDoctor_id(),appointment.getDate(),appointment.getStartTime(),appointment.getEndTime())){
+                appointment.getDoctor_id(), appointment.getDate(), appointment.getStartTime(), appointment.getEndTime())) {
             return 2;
         }
-        appointment.setIs_approved(false); 
+    
+        appointment.setIs_approved(false);
         return appointmentRepository.save(appointment);
     }
+    
 
     public int updateAppointment(Appointment appointment) {
         return appointmentRepository.update(appointment);

@@ -55,9 +55,14 @@ public class StaffController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> addStaff(@RequestBody Staff staff) {
-        staffService.addStaff(staff);
-        return new ResponseEntity<>("Staff added successfully", HttpStatus.CREATED);
+    public ResponseEntity<Long> addStaff(@RequestBody Staff staff) {
+        Long result = staffService.addStaff(staff);
+        if (result>0){
+            return new ResponseEntity<>(result, HttpStatus.CREATED);
+        }
+        else{
+            return new ResponseEntity<>(-1L, HttpStatus.CREATED);
+        }
     }
 
     @PutMapping

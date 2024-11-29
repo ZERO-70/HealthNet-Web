@@ -81,7 +81,7 @@ public class DoctorRepository {
         return rowsAffected;
     }
 
-    public int saveDoctor(Doctor doctor) {
+    public Long saveDoctor(Doctor doctor) {
     // Insert into Person table and retrieve the generated person_id
     String personSql = "INSERT INTO person (name, gender, age, birthdate, contact_info, address) " +
                        "VALUES (?, ?, ?, ?, ?, ?)";
@@ -103,9 +103,14 @@ public class DoctorRepository {
     
     // Insert into Doctor table using the generated doctor_id
     String doctorSql = "INSERT INTO doctor (doctor_id, specialization) VALUES (?, ?)";
-    return jdbcTemplate.update(doctorSql,
+    if( jdbcTemplate.update(doctorSql,
                                generatedDoctorId,
-                               doctor.getSpecialization());
+                               doctor.getSpecialization()) > 0){
+                                return generatedDoctorId;
+                               }
+                               else{
+                                return 0L;
+                               }
     }
     
 }

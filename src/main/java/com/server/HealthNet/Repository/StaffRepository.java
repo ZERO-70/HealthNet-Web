@@ -76,7 +76,7 @@ public class StaffRepository {
         return rowsAffected;
     }
 
-    public int saveStaff(Staff staff) {
+    public Long saveStaff(Staff staff) {
         String personSql = "INSERT INTO person (name, gender, age, birthdate, contact_info, address) " +
                            "VALUES (?, ?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -95,6 +95,11 @@ public class StaffRepository {
         Long generatedStaffId = keyHolder.getKey().longValue();
         
         String staffSql = "INSERT INTO staff (staff_id, proffession) VALUES (?, ?)";
-        return jdbcTemplate.update(staffSql, generatedStaffId, staff.getProffession());
+        if (jdbcTemplate.update(staffSql, generatedStaffId, staff.getProffession())>0){
+            return generatedStaffId;
+        }
+        else{
+            return 0L;
+        }
     }
 }

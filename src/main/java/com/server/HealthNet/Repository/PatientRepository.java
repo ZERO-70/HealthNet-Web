@@ -77,7 +77,7 @@ public class PatientRepository {
         return rowsAffected;
     }
 
-    public int savePatient(Patient patient) {
+    public Long savePatient(Patient patient) {
         String personSql = "INSERT INTO person (name, gender, age, birthdate, contact_info, address) " +
                            "VALUES (?, ?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -96,6 +96,11 @@ public class PatientRepository {
         Long generatedPatientId = keyHolder.getKey().longValue();
         
         String patientSql = "INSERT INTO patient (patient_id, weight, height) VALUES (?, ?, ?)";
-        return jdbcTemplate.update(patientSql, generatedPatientId, patient.getWeight(), patient.getHeight());
+        if (jdbcTemplate.update(patientSql, generatedPatientId, patient.getWeight(), patient.getHeight()) > 0){
+            return generatedPatientId;
+        }
+        else{
+            return 0L;
+        }
     }
 }

@@ -30,7 +30,7 @@ public class PatientService {
         return patientRepository.updatePatient(patient);
     }
 
-    public int addPatient(Patient patient) {
+    public Long addPatient(Patient patient) {
         return patientRepository.savePatient(patient);
     }
 }

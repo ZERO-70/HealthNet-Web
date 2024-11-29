@@ -55,10 +55,15 @@ public class PatientController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('PATIENT') or hasRole('ADMIN')")
-    public ResponseEntity<String> addPatient(@RequestBody Patient patient) {
-        patientService.addPatient(patient);
-        return new ResponseEntity<>("Patient added successfully", HttpStatus.CREATED);
+    public ResponseEntity<Long> addPatient(@RequestBody Patient patient) {
+        Long result = patientService.addPatient(patient);
+        if (result > 0){
+            return new ResponseEntity<>(result, HttpStatus.CREATED);
+
+        }
+        else{
+            return new ResponseEntity<>(-1L, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PutMapping

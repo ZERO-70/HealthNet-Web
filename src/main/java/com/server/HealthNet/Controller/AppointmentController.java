@@ -45,6 +45,9 @@ public class AppointmentController {
         if (res == 2){
             return new ResponseEntity<>("Appointment Time Conflict", HttpStatus.CONFLICT);
         }
+        else if (res == 3){
+            return new ResponseEntity<>("Appointment Time range limit exceeded", HttpStatus.FORBIDDEN);
+        }
         return res > 0
                 ? new ResponseEntity<>("Appointment Insertion successfully", HttpStatus.OK)
                 : new ResponseEntity<>("Appointment Insertion failed", HttpStatus.NOT_FOUND);

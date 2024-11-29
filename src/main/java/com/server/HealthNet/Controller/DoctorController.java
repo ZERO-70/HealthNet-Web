@@ -30,13 +30,12 @@ public class DoctorController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('DOCTOR') or hasRole('ADMIN')")
-    public ResponseEntity<String> addDoctor(@RequestBody Doctor doctor) {
-        int result = doctorService.saveDoctor(doctor);
+    public ResponseEntity<Long> addDoctor(@RequestBody Doctor doctor) {
+        Long result = doctorService.saveDoctor(doctor);
         if (result > 0) {
-            return ResponseEntity.status(HttpStatus.CREATED).body("Doctor added successfully");
+            return ResponseEntity.status(HttpStatus.CREATED).body(result);
         } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to add doctor");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(-1L);
         }
     }
 

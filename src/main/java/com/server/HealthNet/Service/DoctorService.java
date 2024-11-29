@@ -16,7 +16,7 @@ public class DoctorService {
         this.doctorRepository = doctorRepository;
     }
 
-    public int saveDoctor(Doctor doctor) {
+    public Long saveDoctor(Doctor doctor) {
         return doctorRepository.saveDoctor(doctor);
     }
 
