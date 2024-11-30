@@ -47,6 +47,27 @@ public class PatientController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+
+
+    @GetMapping("/getmine")
+    @PreAuthorize("hasRole('PATIENT')")
+    public ResponseEntity<Patient> getCurrentPatient() {
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserAuthentication userAuthentication = userAuthenticationService.getUserByUsername(username);
+        if (userAuthentication == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        Optional<Patient> patient = patientService.getPatientById(userAuthentication.getPersonId());
+        return patient.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+
+
+
+
     @GetMapping
     @PreAuthorize("hasRole('DOCTOR') or hasRole('ADMIN') or hasRole('STAFF')")
     public ResponseEntity<List<Patient>> getAllPatients() {
