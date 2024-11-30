@@ -1,5 +1,6 @@
 package com.server.HealthNet.Controller;
 
+import com.server.HealthNet.Model.Doctor;
 import com.server.HealthNet.Model.Role;
 import com.server.HealthNet.Model.Staff;
 import com.server.HealthNet.Model.UserAuthentication;
@@ -44,6 +45,24 @@ public class StaffController {
         return staff.map(ResponseEntity::ok)
                     .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+
+    @GetMapping("/getmine")
+    @PreAuthorize("hasRole('STAFF')")
+    public ResponseEntity<Staff> getCurrentDoctor() {
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserAuthentication userAuthentication = userAuthenticationService.getUserByUsername(username);
+        if (userAuthentication == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        Optional<Staff> staff = staffService.getStaffById(userAuthentication.getPersonId());
+        return staff.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+
 
     // i think , a staff should not be able to see other staffs , will update in future
     @GetMapping

@@ -1,6 +1,7 @@
 package com.server.HealthNet.Controller;
 
 import com.server.HealthNet.Model.Doctor;
+import com.server.HealthNet.Model.Patient;
 import com.server.HealthNet.Model.Role;
 import com.server.HealthNet.Model.UserAuthentication;
 import com.server.HealthNet.Service.DoctorService;
@@ -57,6 +58,28 @@ public class DoctorController {
         Doctor doctor = doctorService.getDoctorById(id);
         return doctor != null ? ResponseEntity.ok(doctor) : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
+
+
+
+
+    @GetMapping("/getmine")
+    @PreAuthorize("hasRole('DOCTOR')")
+    public ResponseEntity<Doctor> getCurrentDoctor() {
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserAuthentication userAuthentication = userAuthenticationService.getUserByUsername(username);
+        if (userAuthentication == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        Doctor doctor = doctorService.getDoctorById(userAuthentication.getPersonId());
+        if (doctor != null){
+            return ResponseEntity.ok(doctor);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+
 
     @GetMapping
     @PreAuthorize("hasRole('PATIENT') or hasRole('ADMIN')")
