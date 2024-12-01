@@ -86,7 +86,7 @@ public class PatientController {
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         if (!username.equals(patient.getName())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return new ResponseEntity<>("username does not match", HttpStatus.FORBIDDEN);
         }
 
         int rowsAffected = patientService.updatePatient(patient);
