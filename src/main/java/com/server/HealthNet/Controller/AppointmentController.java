@@ -41,12 +41,21 @@ public class AppointmentController {
     @PostMapping
     @PreAuthorize("hasRole('PATIENT')")
     public ResponseEntity<String> createAppointment(@RequestBody Appointment appointment) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserAuthentication userAuthentication = userAuthenticationService.getUserByUsername(username);
+        if (appointment.getPatient_id() != userAuthentication.getPersonId()){
+            return new ResponseEntity<>("Your ID does not match with requested appointment", HttpStatus.FORBIDDEN);
+        }
+
         int res = appointmentService.createAppointment(appointment);
         if (res == 2){
             return new ResponseEntity<>("Appointment Time Conflict", HttpStatus.CONFLICT);
         }
         else if (res == 3){
             return new ResponseEntity<>("Appointment Time range limit exceeded", HttpStatus.FORBIDDEN);
+        }
+        else if (res == 4){
+            return new ResponseEntity<>("Appointment Time conflicts Doctor avalibility Range", HttpStatus.FORBIDDEN);
         }
         return res > 0
                 ? new ResponseEntity<>("Appointment Insertion successfully", HttpStatus.OK)

@@ -14,6 +14,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -125,4 +127,34 @@ public class DoctorController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete doctor");
         }
     }
+
+
+
+    @GetMapping("/{id}/available_time")
+    @PreAuthorize("hasRole('DOCTOR') or hasRole('ADMIN') or hasRole('PATIENT')")
+    public ResponseEntity<List<String>> getAvailableAppointmentTimes(@PathVariable Long id, @RequestParam("date") String date) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserAuthentication userAuthentication = userAuthenticationService.getUserByUsername(username);
+        if (userAuthentication == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    
+        if (!userAuthentication.getPersonId().equals(id) && userAuthentication.getRole() != Role.ADMIN
+            && userAuthentication.getRole() != Role.PATIENT) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+    
+        LocalDate parsedDate;
+        try {
+            parsedDate = LocalDate.parse(date);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    
+        List<String> availableTimes = doctorService.getAvailableAppointmentTimes(id, parsedDate);
+        return ResponseEntity.ok(availableTimes);
+    }
+
+
+
 }

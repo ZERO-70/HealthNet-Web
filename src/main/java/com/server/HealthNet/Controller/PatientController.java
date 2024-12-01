@@ -47,8 +47,6 @@ public class PatientController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-
-
     @GetMapping("/getmine")
     @PreAuthorize("hasRole('PATIENT')")
     public ResponseEntity<Patient> getCurrentPatient() {
@@ -64,10 +62,6 @@ public class PatientController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-
-
-
-
     @GetMapping
     @PreAuthorize("hasRole('DOCTOR') or hasRole('ADMIN') or hasRole('STAFF')")
     public ResponseEntity<List<Patient>> getAllPatients() {
@@ -77,12 +71,12 @@ public class PatientController {
 
     @PostMapping
     public ResponseEntity<Long> addPatient(@RequestBody Patient patient) {
+        System.out.println(patient.getImage().toString());
         Long result = patientService.addPatient(patient);
-        if (result > 0){
+        if (result > 0) {
             return new ResponseEntity<>(result, HttpStatus.CREATED);
 
-        }
-        else{
+        } else {
             return new ResponseEntity<>(-1L, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

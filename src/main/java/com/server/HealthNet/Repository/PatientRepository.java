@@ -39,18 +39,18 @@ public class PatientRepository {
 
     public Optional<Patient> findPatientById(Long patientId) {
         String sql = "SELECT p.person_id, p.name, p.gender, p.age, p.birthdate, p.contact_info, p.address, " +
-                     "pat.weight, pat.height " +
-                     "FROM patient pat " +
-                     "JOIN person p ON pat.patient_id = p.person_id " +
-                     "WHERE pat.patient_id = ?";
+                "pat.weight, pat.height " +
+                "FROM patient pat " +
+                "JOIN person p ON pat.patient_id = p.person_id " +
+                "WHERE pat.patient_id = ?";
         return jdbcTemplate.query(sql, patientRowMapper, patientId).stream().findFirst();
     }
 
     public List<Patient> findAllPatients() {
         String sql = "SELECT p.person_id, p.name, p.gender, p.age, p.birthdate, p.contact_info, p.address, " +
-                     "pat.weight, pat.height " +
-                     "FROM patient pat " +
-                     "JOIN person p ON pat.patient_id = p.person_id";
+                "pat.weight, pat.height " +
+                "FROM patient pat " +
+                "JOIN person p ON pat.patient_id = p.person_id";
         return jdbcTemplate.query(sql, patientRowMapper);
     }
 
@@ -58,57 +58,67 @@ public class PatientRepository {
         // First, delete the patient record from the patient table
         String deletePatientSql = "DELETE FROM patient WHERE patient_id = ?";
         int rowsAffected = jdbcTemplate.update(deletePatientSql, patientId);
-    
+
         // Then, delete the associated record from the person table
         String deletePersonSql = "DELETE FROM person WHERE person_id = ?";
         rowsAffected += jdbcTemplate.update(deletePersonSql, patientId);
-    
+
         return rowsAffected; // Return the total number of rows affected
     }
-    
 
     public int updatePatient(Patient patient) {
         String sql = "UPDATE patient SET weight = ?, height = ? WHERE patient_id = ?";
         int rowsAffected = jdbcTemplate.update(sql, patient.getWeight(), patient.getHeight(), patient.getId());
 
         String personSql = "UPDATE person SET name = ?, gender = ?, age = ?, birthdate = ?, " +
-                           "contact_info = ?, address = ? WHERE person_id = ?";
+                "contact_info = ?, address = ? WHERE person_id = ?";
         rowsAffected += jdbcTemplate.update(personSql,
-                                            patient.getName(),
-                                            patient.getGender(),
-                                            patient.getAge(),
-                                            patient.getBirthdate(),
-                                            patient.getContact_info(),
-                                            patient.getAddress(),
-                                            patient.getId());
+                patient.getName(),
+                patient.getGender(),
+                patient.getAge(),
+                patient.getBirthdate(),
+                patient.getContact_info(),
+                patient.getAddress(),
+                patient.getId());
 
         return rowsAffected;
     }
 
     public Long savePatient(Patient patient) {
-        String personSql = "INSERT INTO person (name, gender, age, birthdate, contact_info, address) " +
-                           "VALUES (?, ?, ?, ?, ?, ?)";
+        String personSql = "INSERT INTO person (name, gender, age, birthdate, contact_info, address, image, image_type) "
+                +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        
+
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(personSql, new String[] {"person_id"});
+            PreparedStatement ps = connection.prepareStatement(personSql, new String[] { "person_id" });
             ps.setString(1, patient.getName());
             ps.setString(2, patient.getGender());
             ps.setInt(3, patient.getAge());
             ps.setDate(4, java.sql.Date.valueOf(patient.getBirthdate()));
             ps.setString(5, patient.getContact_info());
             ps.setString(6, patient.getAddress());
+            if (patient.getImage() != null) {
+                ps.setBytes(7, patient.getImage());
+            } else {
+                ps.setNull(7, java.sql.Types.BLOB); // Handle case where no image is provided
+            }
+            if (patient.getImage_type() != null) {
+                ps.setString(8, patient.getImage_type());
+            } else {
+                ps.setNull(8, java.sql.Types.VARCHAR); // Handle case where no image type is provided
+            }
             return ps;
         }, keyHolder);
-        
+
         Long generatedPatientId = keyHolder.getKey().longValue();
-        
+
         String patientSql = "INSERT INTO patient (patient_id, weight, height) VALUES (?, ?, ?)";
-        if (jdbcTemplate.update(patientSql, generatedPatientId, patient.getWeight(), patient.getHeight()) > 0){
+        if (jdbcTemplate.update(patientSql, generatedPatientId, patient.getWeight(), patient.getHeight()) > 0) {
             return generatedPatientId;
-        }
-        else{
+        } else {
             return 0L;
         }
     }
+
 }

@@ -1,6 +1,7 @@
 com\server\HealthNet\Repository\AvalibilityRepository.class
 com\server\HealthNet\Model\Doctor.class
 com\server\HealthNet\Controller\PatientController.class
+com\server\HealthNet\Repository\DoctorRepository$2.class
 com\server\HealthNet\Controller\StaffController.class
 com\server\HealthNet\Service\PatientService.class
 com\server\HealthNet\Service\StaffService.class
@@ -38,6 +39,7 @@ com\server\HealthNet\HealthNetApplication.class
 com\server\HealthNet\Service\InventoryService.class
 com\server\HealthNet\Repository\DepartmentRepository.class
 com\server\HealthNet\Model\Role.class
+com\server\HealthNet\Service\AppointmentService$1.class
 com\server\HealthNet\Controller\MedicalRecordController.class
 com\server\HealthNet\Repository\TreatementRepository.class
 com\server\HealthNet\Repository\UserAuthenticationRepository.class

@@ -4,6 +4,8 @@ import com.server.HealthNet.Model.Doctor;
 import com.server.HealthNet.Repository.DoctorRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,5 +42,9 @@ public class DoctorService {
 
     public int deleteDoctorById(Long id) {
         return doctorRepository.deleteDoctorById(id);
+    }
+
+    public List<String> getAvailableAppointmentTimes(Long doctorId, LocalDate date) {
+        return doctorRepository.getAvailableAppointmentTimes(doctorId, date);
     }
 }
