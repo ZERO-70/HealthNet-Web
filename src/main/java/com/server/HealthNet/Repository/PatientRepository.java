@@ -67,11 +67,16 @@ public class PatientRepository {
     }
 
     public int updatePatient(Patient patient) {
-        String sql = "UPDATE patient SET weight = ?, height = ? WHERE patient_id = ?";
-        int rowsAffected = jdbcTemplate.update(sql, patient.getWeight(), patient.getHeight(), patient.getId());
+        // Update the patient-specific fields
+        String patientSql = "UPDATE patient SET weight = ?, height = ? WHERE patient_id = ?";
+        int rowsAffected = jdbcTemplate.update(patientSql,
+                patient.getWeight(),
+                patient.getHeight(),
+                patient.getId());
 
+        // Update the common fields in the person table, including image and image_type
         String personSql = "UPDATE person SET name = ?, gender = ?, age = ?, birthdate = ?, " +
-                "contact_info = ?, address = ? WHERE person_id = ?";
+                "contact_info = ?, address = ?, image = ?, image_type = ? WHERE person_id = ?";
         rowsAffected += jdbcTemplate.update(personSql,
                 patient.getName(),
                 patient.getGender(),
@@ -79,6 +84,8 @@ public class PatientRepository {
                 patient.getBirthdate(),
                 patient.getContact_info(),
                 patient.getAddress(),
+                patient.getImage(), // Set the image (as byte array)
+                patient.getImage_type(), // Set the image type (as String)
                 patient.getId());
 
         return rowsAffected;
