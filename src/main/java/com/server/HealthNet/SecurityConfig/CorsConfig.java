@@ -14,10 +14,10 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // Applies to all endpoints
-                        .allowedOrigins("http://localhost:3000") // Allow your React app during development
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // HTTP methods
+                        .allowedOrigins("*") // Allow requests from any origin
+                        .allowedMethods("*") // Allow all HTTP methods (GET, POST, PUT, etc.)
                         .allowedHeaders("*") // Allow all headers
-                        .allowCredentials(true); // Allow cookies or credentials
+                        .allowCredentials(false); // Disable credentials (cookies, etc.)
             }
         };
     }

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin
 @RequestMapping("/user_authentication")
 public class UserAuthenticationController {
 
@@ -27,12 +26,12 @@ public class UserAuthenticationController {
     public ResponseEntity<Void> createUser(@RequestBody UserAuthentication userAuthentication) {
         // Get authentication from the security context
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    
+
         // If the user is authenticated, perform role checks
         if (authentication != null && authentication.isAuthenticated()) {
             String username = authentication.getName();
             UserAuthentication rAuthentication = userAuthenticationService.getUserByUsername(username);
-    
+
             // Only ADMIN can create STAFF or ADMIN roles
             if (userAuthentication.getRole() == Role.STAFF || userAuthentication.getRole() == Role.ADMIN) {
                 if (rAuthentication == null || rAuthentication.getRole() != Role.ADMIN) {
@@ -40,12 +39,11 @@ public class UserAuthenticationController {
                 }
             }
         }
-    
+
         // Proceed to create the user
         userAuthenticationService.createUser(userAuthentication);
         return ResponseEntity.status(201).build(); // Created
     }
-    
 
     @GetMapping("/{username}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -61,14 +59,15 @@ public class UserAuthenticationController {
     }
 
     @PutMapping("/{username}")
-    public ResponseEntity<Void> updateUser(@PathVariable String username, @RequestBody UserAuthentication userAuthentication) {
+    public ResponseEntity<Void> updateUser(@PathVariable String username,
+            @RequestBody UserAuthentication userAuthentication) {
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
         UserAuthentication rAuthentication = userAuthenticationService.getUserByUsername(name);
 
-        if (name != username && rAuthentication.getRole() != Role.ADMIN){
+        if (name != username && rAuthentication.getRole() != Role.ADMIN) {
             return ResponseEntity.status(403).build();
         }
-        userAuthentication.setUsername(username); 
+        userAuthentication.setUsername(username);
         userAuthenticationService.updateUser(userAuthentication);
         return ResponseEntity.ok().build();
     }
@@ -79,12 +78,12 @@ public class UserAuthenticationController {
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
         UserAuthentication rAuthentication = userAuthenticationService.getUserByUsername(name);
 
-        if (!name.equals(username) && rAuthentication.getRole() != Role.ADMIN){
+        if (!name.equals(username) && rAuthentication.getRole() != Role.ADMIN) {
             return ResponseEntity.status(403).build();
         }
 
         // admin cannot delete its self
-        if (username.equals(name) && rAuthentication.getRole() == Role.ADMIN){
+        if (username.equals(name) && rAuthentication.getRole() == Role.ADMIN) {
             return ResponseEntity.status(403).build();
         }
 
@@ -93,11 +92,11 @@ public class UserAuthenticationController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody UserAuthentication userAuthentication){
+    public String login(@RequestBody UserAuthentication userAuthentication) {
         System.out.println("ACESSSSED THEEEEEEEE LOGINNNNNNNNNNNNNNN");
         System.out.println();
         System.out.println();
 
         return userAuthenticationService.verify(userAuthentication);
-    } 
+    }
 }

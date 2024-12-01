@@ -18,7 +18,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/patient")
-@CrossOrigin
 public class PatientController {
 
     @Autowired
@@ -71,7 +70,6 @@ public class PatientController {
 
     @PostMapping
     public ResponseEntity<Long> addPatient(@RequestBody Patient patient) {
-        System.out.println(patient.getImage().toString());
         Long result = patientService.addPatient(patient);
         if (result > 0) {
             return new ResponseEntity<>(result, HttpStatus.CREATED);
