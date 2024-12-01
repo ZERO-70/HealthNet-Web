@@ -33,13 +33,15 @@ public class PatientRepository {
             patient.setAddress(rs.getString("address"));
             patient.setWeight(rs.getString("weight"));
             patient.setHeight(rs.getString("height"));
+            patient.setImage(rs.getBytes("image")); // Map image
+            patient.setImage_type(rs.getString("image_type")); // Map image type
             return patient;
         }
     };
 
     public Optional<Patient> findPatientById(Long patientId) {
         String sql = "SELECT p.person_id, p.name, p.gender, p.age, p.birthdate, p.contact_info, p.address, " +
-                "pat.weight, pat.height " +
+                "p.image, p.image_type, pat.weight, pat.height " +
                 "FROM patient pat " +
                 "JOIN person p ON pat.patient_id = p.person_id " +
                 "WHERE pat.patient_id = ?";
@@ -48,33 +50,29 @@ public class PatientRepository {
 
     public List<Patient> findAllPatients() {
         String sql = "SELECT p.person_id, p.name, p.gender, p.age, p.birthdate, p.contact_info, p.address, " +
-                "pat.weight, pat.height " +
+                "p.image, p.image_type, pat.weight, pat.height " +
                 "FROM patient pat " +
                 "JOIN person p ON pat.patient_id = p.person_id";
         return jdbcTemplate.query(sql, patientRowMapper);
     }
 
     public int deletePatientById(Long patientId) {
-        // First, delete the patient record from the patient table
         String deletePatientSql = "DELETE FROM patient WHERE patient_id = ?";
         int rowsAffected = jdbcTemplate.update(deletePatientSql, patientId);
 
-        // Then, delete the associated record from the person table
         String deletePersonSql = "DELETE FROM person WHERE person_id = ?";
         rowsAffected += jdbcTemplate.update(deletePersonSql, patientId);
 
-        return rowsAffected; // Return the total number of rows affected
+        return rowsAffected;
     }
 
     public int updatePatient(Patient patient) {
-        // Update the patient-specific fields
         String patientSql = "UPDATE patient SET weight = ?, height = ? WHERE patient_id = ?";
         int rowsAffected = jdbcTemplate.update(patientSql,
                 patient.getWeight(),
                 patient.getHeight(),
                 patient.getId());
 
-        // Update the common fields in the person table, including image and image_type
         String personSql = "UPDATE person SET name = ?, gender = ?, age = ?, birthdate = ?, " +
                 "contact_info = ?, address = ?, image = ?, image_type = ? WHERE person_id = ?";
         rowsAffected += jdbcTemplate.update(personSql,
@@ -84,8 +82,8 @@ public class PatientRepository {
                 patient.getBirthdate(),
                 patient.getContact_info(),
                 patient.getAddress(),
-                patient.getImage(), // Set the image (as byte array)
-                patient.getImage_type(), // Set the image type (as String)
+                patient.getImage(), // Include image
+                patient.getImage_type(), // Include image type
                 patient.getId());
 
         return rowsAffected;
@@ -108,12 +106,12 @@ public class PatientRepository {
             if (patient.getImage() != null) {
                 ps.setBytes(7, patient.getImage());
             } else {
-                ps.setNull(7, java.sql.Types.BLOB); // Handle case where no image is provided
+                ps.setNull(7, java.sql.Types.BLOB); // Handle null image
             }
             if (patient.getImage_type() != null) {
                 ps.setString(8, patient.getImage_type());
             } else {
-                ps.setNull(8, java.sql.Types.VARCHAR); // Handle case where no image type is provided
+                ps.setNull(8, java.sql.Types.VARCHAR); // Handle null image type
             }
             return ps;
         }, keyHolder);
@@ -127,5 +125,4 @@ public class PatientRepository {
             return 0L;
         }
     }
-
 }
