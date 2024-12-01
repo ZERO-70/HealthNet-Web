@@ -87,7 +87,8 @@ public class PatientController {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         if (!username.equals(patient.getName())) {
             System.out.println(
-                    "----------------------------------------username did not matched--------------------------------");
+                    "----------------------------------------username did not matched--------------------------------"
+                            + username + " = " + patient.getName());
             return new ResponseEntity<>("username does not match", HttpStatus.FORBIDDEN);
         }
 
