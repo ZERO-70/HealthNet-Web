@@ -35,6 +35,7 @@ C:\Users\user\Documents\java projects\final\HealthNet\src\main\java\com\server\H
 C:\Users\user\Documents\java projects\final\HealthNet\src\main\java\com\server\HealthNet\Repository\StaffRepository.java
 C:\Users\user\Documents\java projects\final\HealthNet\src\main\java\com\server\HealthNet\Repository\TreatementRepository.java
 C:\Users\user\Documents\java projects\final\HealthNet\src\main\java\com\server\HealthNet\Repository\UserAuthenticationRepository.java
+C:\Users\user\Documents\java projects\final\HealthNet\src\main\java\com\server\HealthNet\SecurityConfig\CorsConfig.java
 C:\Users\user\Documents\java projects\final\HealthNet\src\main\java\com\server\HealthNet\SecurityConfig\JwtFilter.java
 C:\Users\user\Documents\java projects\final\HealthNet\src\main\java\com\server\HealthNet\SecurityConfig\SecurityConfig.java
 C:\Users\user\Documents\java projects\final\HealthNet\src\main\java\com\server\HealthNet\Service\AppointmentService.java
