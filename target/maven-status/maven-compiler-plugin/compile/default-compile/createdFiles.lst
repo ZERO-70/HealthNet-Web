@@ -4,7 +4,6 @@ com\server\HealthNet\Controller\PatientController.class
 com\server\HealthNet\Repository\DoctorRepository$2.class
 com\server\HealthNet\Controller\StaffController.class
 com\server\HealthNet\Service\PatientService.class
-com\server\HealthNet\SecurityConfig\CorsConfig.class
 com\server\HealthNet\Service\StaffService.class
 com\server\HealthNet\Service\MedicalRecordService.class
 com\server\HealthNet\Model\CustomUserDetails.class
@@ -49,7 +48,6 @@ com\server\HealthNet\Model\Inventory.class
 com\server\HealthNet\Repository\AvalibilityRepository$AvalibilityRowMapper.class
 com\server\HealthNet\Model\UserAuthentication.class
 com\server\HealthNet\Controller\UserAuthenticationController.class
-com\server\HealthNet\SecurityConfig\CorsConfig$1.class
 com\server\HealthNet\Repository\PatientRepository$1.class
 com\server\HealthNet\Repository\UserAuthenticationRepository$UserAuthenticationRowMapper.class
 com\server\HealthNet\SecurityConfig\JwtFilter.class

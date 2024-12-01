@@ -17,6 +17,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/avalibility")
+@CrossOrigin(origins = "*")
 public class AvalibilityController {
 
     @Autowired
@@ -34,7 +35,8 @@ public class AvalibilityController {
 
         // Ensure the logged-in user is the doctor associated with the availability
         if (!userAuthentication.getPersonId().equals(avalibility.getDoctor_id())) {
-            return new ResponseEntity<>("You are not authorized to add availability for another doctor", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>("You are not authorized to add availability for another doctor",
+                    HttpStatus.FORBIDDEN);
         }
 
         // Proceed with adding availability
@@ -43,7 +45,6 @@ public class AvalibilityController {
                 ? new ResponseEntity<>("Availability Inserted successfully", HttpStatus.OK)
                 : new ResponseEntity<>("Availability Insertion failed", HttpStatus.NOT_FOUND);
     }
-
 
     @GetMapping
     @PreAuthorize("hasRole('STAFF') or hasRole('ADMIN')")
@@ -58,18 +59,16 @@ public class AvalibilityController {
         // Get the logged-in user's details
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         UserAuthentication userAuthentication = userAuthenticationService.getUserByUsername(username);
-    
+
         // Fetch availability based on the logged-in user's doctor_id
         Long doctorId = userAuthentication.getPersonId();
         Optional<Avalibility> avalibility = service.getAvalibilityById(doctorId);
-    
+
         // Return the availability or a 404 if not found
         return avalibility.isPresent()
                 ? new ResponseEntity<>(avalibility, HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-    
-
 
     @DeleteMapping
     @PreAuthorize("hasRole('DOCTOR')")
@@ -77,35 +76,34 @@ public class AvalibilityController {
         // Get the logged-in user's details
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         UserAuthentication userAuthentication = userAuthenticationService.getUserByUsername(username);
-    
+
         // Use the logged-in user's doctor_id to delete their availability
         Long doctorId = userAuthentication.getPersonId();
         int result = service.deleteAvalibilityById(doctorId);
-    
+
         return result > 0
                 ? new ResponseEntity<>("Availability Deleted successfully", HttpStatus.OK)
                 : new ResponseEntity<>("No Availability found for deletion", HttpStatus.NOT_FOUND);
     }
-    
-        
+
     @PutMapping
     @PreAuthorize("hasRole('DOCTOR')")
     public ResponseEntity<String> updateAvalibility(@RequestBody Avalibility avalibility) {
         // Get the logged-in user's details
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         UserAuthentication userAuthentication = userAuthenticationService.getUserByUsername(username);
-    
+
         // Ensure the logged-in user's doctor_id matches the doctor_id in the request
         Long doctorId = userAuthentication.getPersonId();
         if (!doctorId.equals(avalibility.getDoctor_id())) {
             return new ResponseEntity<>("You are not authorized to update this availability", HttpStatus.FORBIDDEN);
         }
-    
+
         // Proceed with the update
         int result = service.updateAvalibility(doctorId, avalibility);
         return result > 0
                 ? new ResponseEntity<>("Availability Updated successfully", HttpStatus.OK)
                 : new ResponseEntity<>("Availability Update failed", HttpStatus.NOT_FOUND);
     }
-    
+
 }

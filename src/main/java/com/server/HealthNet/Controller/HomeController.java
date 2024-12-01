@@ -14,14 +14,14 @@ import com.server.HealthNet.Service.UserAuthenticationService;
 
 @RestController
 @RequestMapping("/home")
-@CrossOrigin
+@CrossOrigin(origins = "*")
 public class HomeController {
 
     @Autowired
     private UserAuthenticationService userAuthenticationService;
 
     @GetMapping
-    public String welcome(){
+    public String welcome() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         System.out.println("ACESSSSED THEEEE HOMEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
         System.out.println();

@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/persons")
-@CrossOrigin
+@CrossOrigin(origins = "*")
 public class PersonController {
     private final PersonService personService;
 
@@ -43,7 +43,7 @@ public class PersonController {
     }
 
     // dont want anyone to acess this
-    //@PutMapping("/{id}")
+    // @PutMapping("/{id}")
     public ResponseEntity<String> updatePerson(@PathVariable Long id, @RequestBody Person person) {
         // Assuming the service method handles the logic to check if the person exists
         person.setId(id); // Set the ID of the person to be updated

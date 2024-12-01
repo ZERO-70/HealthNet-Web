@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/appointment")
-@CrossOrigin
+@CrossOrigin(origins = "*")
 public class AppointmentController {
 
     @Autowired
@@ -26,7 +26,7 @@ public class AppointmentController {
     @Autowired
     private UserAuthenticationService userAuthenticationService;
 
-    @GetMapping 
+    @GetMapping
     @PreAuthorize("hasRole('STAFF') or hasRole('ADMIN')")
     public List<Appointment> getAllAppointments() {
         return appointmentService.getAllAppointments();
@@ -43,18 +43,16 @@ public class AppointmentController {
     public ResponseEntity<String> createAppointment(@RequestBody Appointment appointment) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         UserAuthentication userAuthentication = userAuthenticationService.getUserByUsername(username);
-        if (appointment.getPatient_id() != userAuthentication.getPersonId()){
+        if (appointment.getPatient_id() != userAuthentication.getPersonId()) {
             return new ResponseEntity<>("Your ID does not match with requested appointment", HttpStatus.FORBIDDEN);
         }
 
         int res = appointmentService.createAppointment(appointment);
-        if (res == 2){
+        if (res == 2) {
             return new ResponseEntity<>("Appointment Time Conflict", HttpStatus.CONFLICT);
-        }
-        else if (res == 3){
+        } else if (res == 3) {
             return new ResponseEntity<>("Appointment Time range limit exceeded", HttpStatus.FORBIDDEN);
-        }
-        else if (res == 4){
+        } else if (res == 4) {
             return new ResponseEntity<>("Appointment Time conflicts Doctor avalibility Range", HttpStatus.FORBIDDEN);
         }
         return res > 0
@@ -75,9 +73,10 @@ public class AppointmentController {
             return new ResponseEntity<>("Appointment not found", HttpStatus.NOT_FOUND);
         }
 
-        // Check if the logged-in user is the patient or the doctor associated with the appointment
+        // Check if the logged-in user is the patient or the doctor associated with the
+        // appointment
         if (!userAuthentication.getPersonId().equals(existingAppointment.getPatient_id()) &&
-            !userAuthentication.getPersonId().equals(existingAppointment.getDoctor_id())) {
+                !userAuthentication.getPersonId().equals(existingAppointment.getDoctor_id())) {
             return new ResponseEntity<>("You are not authorized to update this appointment", HttpStatus.FORBIDDEN);
         }
 
@@ -86,7 +85,6 @@ public class AppointmentController {
                 ? new ResponseEntity<>("Appointment Updated successfully", HttpStatus.OK)
                 : new ResponseEntity<>("Appointment Update failed", HttpStatus.NOT_FOUND);
     }
-
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('PATIENT') or hasRole('STAFF') or hasRole('ADMIN')")
@@ -103,8 +101,8 @@ public class AppointmentController {
 
         // Check if the logged-in user is authorized to delete the appointment
         if (!userAuthentication.getRole().equals(Role.ADMIN) &&
-            !userAuthentication.getRole().equals(Role.STAFF) &&
-            !userAuthentication.getPersonId().equals(appointment.getPatient_id())) {
+                !userAuthentication.getRole().equals(Role.STAFF) &&
+                !userAuthentication.getPersonId().equals(appointment.getPatient_id())) {
             return new ResponseEntity<>("You are not authorized to delete this appointment", HttpStatus.FORBIDDEN);
         }
 
@@ -113,7 +111,6 @@ public class AppointmentController {
                 ? new ResponseEntity<>("Appointment Deletion successfully", HttpStatus.OK)
                 : new ResponseEntity<>("Appointment Deletion failed", HttpStatus.NOT_FOUND);
     }
-
 
     @GetMapping("/getmine") // app.com/appointment/getmine
     public List<Appointment> getmyAppointments() {

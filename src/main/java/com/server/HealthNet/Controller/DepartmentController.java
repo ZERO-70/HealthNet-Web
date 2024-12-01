@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/department")
-@CrossOrigin
+@CrossOrigin(origins = "*")
 public class DepartmentController {
 
     @Autowired
@@ -33,19 +33,25 @@ public class DepartmentController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> createDepartment(@RequestBody Department department) {
-        return departmentService.createDepartment(department)>0? new ResponseEntity<>("Department Inserted successfully", HttpStatus.OK):new ResponseEntity<>("Department Insertion failed", HttpStatus.NOT_FOUND);
+        return departmentService.createDepartment(department) > 0
+                ? new ResponseEntity<>("Department Inserted successfully", HttpStatus.OK)
+                : new ResponseEntity<>("Department Insertion failed", HttpStatus.NOT_FOUND);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> updateDepartment(@PathVariable Long id, @RequestBody Department department) {
         department.setDepartment_id(id);
-        return departmentService.updateDepartment(department)>0?new ResponseEntity<>("Department Updated successfully", HttpStatus.OK):new ResponseEntity<>("Department Update failed", HttpStatus.NOT_FOUND);
+        return departmentService.updateDepartment(department) > 0
+                ? new ResponseEntity<>("Department Updated successfully", HttpStatus.OK)
+                : new ResponseEntity<>("Department Update failed", HttpStatus.NOT_FOUND);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteDepartment(@PathVariable Long id) {
-        return departmentService.deleteDepartment(id)>0?new ResponseEntity<>("Department Deleted successfully", HttpStatus.OK):new ResponseEntity<>("Department Deletion failed", HttpStatus.NOT_FOUND);
+        return departmentService.deleteDepartment(id) > 0
+                ? new ResponseEntity<>("Department Deleted successfully", HttpStatus.OK)
+                : new ResponseEntity<>("Department Deletion failed", HttpStatus.NOT_FOUND);
     }
 }

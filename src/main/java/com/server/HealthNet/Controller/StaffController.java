@@ -19,7 +19,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/staff")
-@CrossOrigin
+@CrossOrigin(origins = "*")
 public class StaffController {
 
     @Autowired
@@ -43,9 +43,8 @@ public class StaffController {
 
         Optional<Staff> staff = staffService.getStaffById(id);
         return staff.map(ResponseEntity::ok)
-                    .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
-
 
     @GetMapping("/getmine")
     @PreAuthorize("hasRole('STAFF')")
@@ -62,9 +61,8 @@ public class StaffController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-
-
-    // i think , a staff should not be able to see other staffs , will update in future
+    // i think , a staff should not be able to see other staffs , will update in
+    // future
     @GetMapping
     @PreAuthorize("hasRole('STAFF') or hasRole('ADMIN')")
     public ResponseEntity<List<Staff>> getAllStaff() {
@@ -76,10 +74,9 @@ public class StaffController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Long> addStaff(@RequestBody Staff staff) {
         Long result = staffService.addStaff(staff);
-        if (result>0){
+        if (result > 0) {
             return new ResponseEntity<>(result, HttpStatus.CREATED);
-        }
-        else{
+        } else {
             return new ResponseEntity<>(-1L, HttpStatus.CREATED);
         }
     }
