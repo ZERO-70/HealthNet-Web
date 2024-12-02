@@ -29,25 +29,24 @@ public class DoctorRepository {
     @Autowired
     private AvalibilityRepository avalibilityRepository;
 
-    private final RowMapper<Doctor> doctorRowMapper = new RowMapper<Doctor>() {
-        @Override
-        public Doctor mapRow(ResultSet rs, int rowNum) throws SQLException {
-            Doctor doctor = new Doctor();
-            doctor.setId(rs.getLong("person_id"));
-            doctor.setName(rs.getString("name"));
-            doctor.setGender(rs.getString("gender"));
-            doctor.setAge(rs.getInt("age"));
-            doctor.setBirthdate(rs.getDate("birthdate").toLocalDate());
-            doctor.setContact_info(rs.getString("contact_info"));
-            doctor.setAddress(rs.getString("address"));
-            doctor.setSpecialization(rs.getString("specialization"));
-            return doctor;
-        }
+    private final RowMapper<Doctor> doctorRowMapper = (ResultSet rs, int rowNum) -> {
+        Doctor doctor = new Doctor();
+        doctor.setId(rs.getLong("person_id"));
+        doctor.setName(rs.getString("name"));
+        doctor.setGender(rs.getString("gender"));
+        doctor.setAge(rs.getInt("age"));
+        doctor.setBirthdate(rs.getDate("birthdate").toLocalDate());
+        doctor.setContact_info(rs.getString("contact_info"));
+        doctor.setAddress(rs.getString("address"));
+        doctor.setSpecialization(rs.getString("specialization"));
+        doctor.setImage(rs.getBytes("image")); // Handle image
+        doctor.setImage_type(rs.getString("image_type")); // Handle image type
+        return doctor;
     };
 
     public Optional<Doctor> findDoctorById(Long doctorId) {
         String sql = "SELECT p.person_id, p.name, p.gender, p.age, p.birthdate, p.contact_info, p.address, " +
-                "d.specialization " +
+                "p.image, p.image_type, d.specialization " +
                 "FROM doctor d " +
                 "JOIN person p ON d.doctor_id = p.person_id " +
                 "WHERE d.doctor_id = ?";
@@ -56,35 +55,30 @@ public class DoctorRepository {
 
     public List<Doctor> findAllDoctors() {
         String sql = "SELECT p.person_id, p.name, p.gender, p.age, p.birthdate, p.contact_info, p.address, " +
-                "d.specialization " +
+                "p.image, p.image_type, d.specialization " +
                 "FROM doctor d " +
                 "JOIN person p ON d.doctor_id = p.person_id";
         return jdbcTemplate.query(sql, doctorRowMapper);
     }
 
-    // Method to delete a doctor by their ID
     public int deleteDoctorById(Long doctorId) {
-        // First, delete the doctor record from the doctor table
         String deleteDoctorSql = "DELETE FROM doctor WHERE doctor_id = ?";
         int rowsAffected = jdbcTemplate.update(deleteDoctorSql, doctorId);
 
-        // Then, delete the associated record from the person table
         String deletePersonSql = "DELETE FROM person WHERE person_id = ?";
         rowsAffected += jdbcTemplate.update(deletePersonSql, doctorId);
 
-        return rowsAffected; // Return the total number of rows affected
+        return rowsAffected;
     }
 
-    // Method to update doctor details
     public int updateDoctor(Doctor doctor) {
         String sql = "UPDATE doctor SET specialization = ? WHERE doctor_id = ?";
         int rowsAffected = jdbcTemplate.update(sql,
                 doctor.getSpecialization(),
                 doctor.getId());
 
-        // Also update fields in the Person table
         String personSql = "UPDATE person SET name = ?, gender = ?, age = ?, birthdate = ?, " +
-                "contact_info = ?, address = ? WHERE person_id = ?";
+                "contact_info = ?, address = ?, image = ?, image_type = ? WHERE person_id = ?";
         rowsAffected += jdbcTemplate.update(personSql,
                 doctor.getName(),
                 doctor.getGender(),
@@ -92,13 +86,14 @@ public class DoctorRepository {
                 doctor.getBirthdate(),
                 doctor.getContact_info(),
                 doctor.getAddress(),
+                doctor.getImage(), // Update image
+                doctor.getImage_type(), // Update image type
                 doctor.getId());
 
         return rowsAffected;
     }
 
     public Long saveDoctor(Doctor doctor) {
-        // Insert into Person table and retrieve the generated person_id
         String personSql = "INSERT INTO person (name, gender, age, birthdate, contact_info, address, image, image_type) "
                 +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -115,20 +110,18 @@ public class DoctorRepository {
             if (doctor.getImage() != null) {
                 ps.setBytes(7, doctor.getImage());
             } else {
-                ps.setNull(7, java.sql.Types.BLOB); // Handle case where no image is provided
+                ps.setNull(7, java.sql.Types.BLOB);
             }
             if (doctor.getImage_type() != null) {
                 ps.setString(8, doctor.getImage_type());
             } else {
-                ps.setNull(8, java.sql.Types.VARCHAR); // Handle case where no image type is provided
+                ps.setNull(8, java.sql.Types.VARCHAR);
             }
             return ps;
         }, keyHolder);
 
-        // Retrieve the generated person_id to use as doctor_id
         Long generatedDoctorId = keyHolder.getKey().longValue();
 
-        // Insert into Doctor table using the generated doctor_id
         String doctorSql = "INSERT INTO doctor (doctor_id, specialization) VALUES (?, ?)";
         if (jdbcTemplate.update(doctorSql, generatedDoctorId, doctor.getSpecialization()) > 0) {
             return generatedDoctorId;
@@ -145,7 +138,6 @@ public class DoctorRepository {
 
         Avalibility availability = availabilityOpt.get();
 
-        // Query to fetch appointments
         String appointmentsSql = "SELECT start_time, end_time FROM appointments WHERE doctor_id = ? AND date = ?";
         List<Appointment> appointments = jdbcTemplate.query(appointmentsSql, (rs, rowNum) -> {
             Appointment appointment = new Appointment();
@@ -154,7 +146,6 @@ public class DoctorRepository {
             return appointment;
         }, doctorId, date);
 
-        // Determine start and end times based on the day of the week
         LocalTime dayStart, dayEnd;
         switch (date.getDayOfWeek()) {
             case MONDAY -> {
@@ -190,44 +181,30 @@ public class DoctorRepository {
             }
         }
 
-        // Check for null dayStart and dayEnd
         if (dayStart == null || dayEnd == null) {
             return List.of();
         }
 
-        // Sort appointments by start time
         appointments.sort(Comparator.comparing(Appointment::getStartTime));
 
         List<String> availableTimes = new ArrayList<>();
         LocalTime currentStart = dayStart;
 
         for (Appointment appt : appointments) {
-            // Check if there is a gap between currentStart and the next appointment's start
-            // time
             if (!appt.getStartTime().isBefore(currentStart)) {
-                System.out.println("apt ka start :" + appt.getStartTime() + " cur start : " + currentStart);
                 if (appt.getStartTime().isAfter(currentStart)) {
                     availableTimes.add(currentStart + " - " + appt.getStartTime());
-                    System.out.println(" added    :" + currentStart + " - " + appt.getStartTime());
                 }
-                // Update currentStart to the end of this appointment
                 currentStart = appt.getEndTime();
-                System.out.println(" updated cur start time : " + currentStart);
             } else if (appt.getEndTime().isAfter(currentStart)) {
-                System.out.println("apt ka start :" + appt.getStartTime() + " cur start : " + currentStart);
-                // Handle overlapping appointments
                 currentStart = appt.getEndTime();
-                System.out.println(" updated cur start time : " + currentStart);
             }
         }
 
-        // Add the last available slot if it exists
         if (currentStart.isBefore(dayEnd)) {
             availableTimes.add(currentStart + " - " + dayEnd);
-            System.out.println(" added    :" + currentStart + " - " + dayEnd);
         }
 
         return availableTimes;
     }
-
 }

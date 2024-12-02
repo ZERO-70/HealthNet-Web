@@ -32,13 +32,15 @@ public class StaffRepository {
             staff.setContact_info(rs.getString("contact_info"));
             staff.setAddress(rs.getString("address"));
             staff.setProffession(rs.getString("proffession"));
+            staff.setImage(rs.getBytes("image")); // Map image
+            staff.setImage_type(rs.getString("image_type")); // Map image type
             return staff;
         }
     };
 
     public Optional<Staff> findStaffById(Long staffId) {
         String sql = "SELECT p.person_id, p.name, p.gender, p.age, p.birthdate, p.contact_info, p.address, " +
-                "s.proffession " +
+                "p.image, p.image_type, s.proffession " +
                 "FROM staff s " +
                 "JOIN person p ON s.staff_id = p.person_id " +
                 "WHERE s.staff_id = ?";
@@ -47,7 +49,7 @@ public class StaffRepository {
 
     public List<Staff> findAllStaff() {
         String sql = "SELECT p.person_id, p.name, p.gender, p.age, p.birthdate, p.contact_info, p.address, " +
-                "s.proffession " +
+                "p.image, p.image_type, s.proffession " +
                 "FROM staff s " +
                 "JOIN person p ON s.staff_id = p.person_id";
         return jdbcTemplate.query(sql, staffRowMapper);
@@ -66,11 +68,13 @@ public class StaffRepository {
     }
 
     public int updateStaff(Staff staff) {
-        String sql = "UPDATE staff SET proffession = ? WHERE staff_id = ?";
-        int rowsAffected = jdbcTemplate.update(sql, staff.getProffession(), staff.getId());
+        // Update the profession in the Staff table
+        String staffSql = "UPDATE staff SET proffession = ? WHERE staff_id = ?";
+        int rowsAffected = jdbcTemplate.update(staffSql, staff.getProffession(), staff.getId());
 
+        // Update all fields in the Person table, including image and image_type
         String personSql = "UPDATE person SET name = ?, gender = ?, age = ?, birthdate = ?, " +
-                "contact_info = ?, address = ? WHERE person_id = ?";
+                "contact_info = ?, address = ?, image = ?, image_type = ? WHERE person_id = ?";
         rowsAffected += jdbcTemplate.update(personSql,
                 staff.getName(),
                 staff.getGender(),
@@ -78,6 +82,8 @@ public class StaffRepository {
                 staff.getBirthdate(),
                 staff.getContact_info(),
                 staff.getAddress(),
+                staff.getImage(), // Update image
+                staff.getImage_type(), // Update image type
                 staff.getId());
 
         return rowsAffected;
@@ -115,12 +121,11 @@ public class StaffRepository {
         Long generatedStaffId = keyHolder.getKey().longValue();
 
         // Insert into Staff table using the generated staff_id
-        String staffSql = "INSERT INTO staff (staff_id, profession) VALUES (?, ?)";
+        String staffSql = "INSERT INTO staff (staff_id, proffession) VALUES (?, ?)";
         if (jdbcTemplate.update(staffSql, generatedStaffId, staff.getProffession()) > 0) {
             return generatedStaffId;
         } else {
             return 0L;
         }
     }
-
 }
