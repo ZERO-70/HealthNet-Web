@@ -39,7 +39,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/user_authentication/register",
-                                "/user_authentication/login",
+                                "/user_authentication/login", "/user_authentication/exists/{username}",
                                 "/home",
                                 "/doctor",
                                 "/patient")

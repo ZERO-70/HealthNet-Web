@@ -100,4 +100,10 @@ public class UserAuthenticationController {
 
         return userAuthenticationService.verify(userAuthentication);
     }
+
+    @GetMapping("/exists/{username}")
+    public ResponseEntity<Boolean> doesUsernameExist(@PathVariable String username) {
+        boolean exists = userAuthenticationService.doesUsernameExist(username);
+        return ResponseEntity.ok(exists);
+    }
 }

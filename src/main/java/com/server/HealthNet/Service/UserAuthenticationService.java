@@ -22,10 +22,8 @@ public class UserAuthenticationService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-
     @Autowired
     private JWTservice jwTservice;
-
 
     public UserAuthenticationService(UserAuthenticationRepository userAuthenticationRepository) {
         this.userAuthenticationRepository = userAuthenticationRepository;
@@ -54,9 +52,15 @@ public class UserAuthenticationService {
     }
 
     public String verify(UserAuthentication userAuthentication) {
-        Authentication authentication = authenticationManager.
-        authenticate(new UsernamePasswordAuthenticationToken(userAuthentication.getUsername(), userAuthentication.getPassword()));
-        return authentication.isAuthenticated()? jwTservice.
-        generateToken(userAuthentication.getUsername(),userAuthentication.getRole().toString()) : "Not Authenticated";
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                userAuthentication.getUsername(), userAuthentication.getPassword()));
+        return authentication.isAuthenticated()
+                ? jwTservice.generateToken(userAuthentication.getUsername(), userAuthentication.getRole().toString())
+                : "Not Authenticated";
+    }
+
+    public boolean doesUsernameExist(String username) {
+        List<String> usernames = userAuthenticationRepository.getAllUsernames();
+        return usernames.contains(username);
     }
 }

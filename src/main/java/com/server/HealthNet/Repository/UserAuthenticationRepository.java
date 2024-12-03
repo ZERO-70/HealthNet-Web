@@ -20,19 +20,16 @@ public class UserAuthenticationRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    
     public int save(UserAuthentication userAuthentication) {
         String sql = "INSERT INTO user_authentication (username, password, role, person_id) VALUES (?, ?, ?, ?)";
         return jdbcTemplate.update(
                 sql,
                 userAuthentication.getUsername(),
                 userAuthentication.getPassword(),
-                userAuthentication.getRole().name(), 
-                userAuthentication.getPersonId()
-        );
+                userAuthentication.getRole().name(),
+                userAuthentication.getPersonId());
     }
 
-    
     public UserAuthentication findByUsername(String username) {
         String sql = "SELECT * FROM user_authentication WHERE username = ?";
         try {
@@ -42,31 +39,26 @@ public class UserAuthenticationRepository {
         }
     }
 
-    
     public List<UserAuthentication> findAll() {
         String sql = "SELECT * FROM user_authentication";
         return jdbcTemplate.query(sql, new UserAuthenticationRowMapper());
     }
 
-    
     public int update(UserAuthentication userAuthentication) {
         String sql = "UPDATE user_authentication SET password = ?, role = ?, person_id = ? WHERE username = ?";
         return jdbcTemplate.update(
                 sql,
                 userAuthentication.getPassword(),
-                userAuthentication.getRole().name(), 
+                userAuthentication.getRole().name(),
                 userAuthentication.getPersonId(),
-                userAuthentication.getUsername()
-        );
+                userAuthentication.getUsername());
     }
 
-    
     public int deleteByUsername(String username) {
         String sql = "DELETE FROM user_authentication WHERE username = ?";
         return jdbcTemplate.update(sql, username);
     }
 
-    
     private static class UserAuthenticationRowMapper implements RowMapper<UserAuthentication> {
         @Override
         public UserAuthentication mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -76,9 +68,14 @@ public class UserAuthenticationRepository {
             user.setPersonId(rs.getLong("person_id"));
 
             String roleStr = rs.getString("role");
-            user.setRole(Role.valueOf(roleStr.toUpperCase())); 
+            user.setRole(Role.valueOf(roleStr.toUpperCase()));
 
             return user;
         }
+    }
+
+    public List<String> getAllUsernames() {
+        String sql = "SELECT username FROM user_authentication";
+        return jdbcTemplate.queryForList(sql, String.class);
     }
 }
