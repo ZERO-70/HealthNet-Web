@@ -28,7 +28,7 @@ public class PatientController {
     private UserAuthenticationService userAuthenticationService;
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('PATIENT') or hasRole('ADMIN') or hasRole('STAFF')")
+    @PreAuthorize("hasRole('PATIENT') or hasRole('ADMIN') or hasRole('STAFF') or hasRole('DOCTOR')")
     public ResponseEntity<Patient> getPatientById(@PathVariable Long id) {
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
