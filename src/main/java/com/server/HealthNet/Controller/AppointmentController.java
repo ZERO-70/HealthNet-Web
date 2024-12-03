@@ -112,7 +112,7 @@ public class AppointmentController {
                 : new ResponseEntity<>("Appointment Deletion failed", HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/getmine") // app.com/appointment/getmine
+    @GetMapping("/getmine")
     public List<Appointment> getmyAppointments() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         UserAuthentication userAuthentication = userAuthenticationService.getUserByUsername(username);
@@ -147,4 +147,28 @@ public class AppointmentController {
                 ? new ResponseEntity<>("Appointment approved successfully", HttpStatus.OK)
                 : new ResponseEntity<>("Failed to approve appointment", HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @PutMapping("/{id}/mark-not-pending")
+    @PreAuthorize("hasRole('DOCTOR')")
+    public ResponseEntity<String> markAppointmentNotPending(@PathVariable Long id) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserAuthentication userAuthentication = userAuthenticationService.getUserByUsername(username);
+
+        Appointment appointment = appointmentService.getAppointmentById(id);
+        if (appointment == null) {
+            return new ResponseEntity<>("Appointment not found", HttpStatus.NOT_FOUND);
+        }
+
+        if (!userAuthentication.getPersonId().equals(appointment.getDoctor_id())) {
+            return new ResponseEntity<>("You are not authorized to modify this appointment", HttpStatus.FORBIDDEN);
+        }
+
+        appointment.setIs_pending(false);
+        int result = appointmentService.updateAppointment(appointment);
+
+        return result > 0
+                ? new ResponseEntity<>("Appointment marked as not pending successfully", HttpStatus.OK)
+                : new ResponseEntity<>("Failed to mark appointment as not pending", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 }
