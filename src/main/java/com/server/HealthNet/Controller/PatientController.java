@@ -38,7 +38,7 @@ public class PatientController {
         }
         // i hope this works
         if (!userAuthentication.getPersonId().equals(id) && userAuthentication.getRole() != Role.ADMIN
-                && userAuthentication.getRole() != Role.STAFF) {
+                && userAuthentication.getRole() != Role.STAFF && userAuthentication.getRole() != Role.DOCTOR) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
