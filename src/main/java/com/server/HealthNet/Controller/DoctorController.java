@@ -89,8 +89,9 @@ public class DoctorController {
     @PreAuthorize("hasRole('DOCTOR')")
     public ResponseEntity<String> updateDoctor(@RequestBody Doctor doctor) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        if (!username.equals(doctor.getName())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        UserAuthentication userAuthentication = userAuthenticationService.getUserByUsername(username);
+        if (userAuthentication.getPersonId() != doctor.getId()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not validated");
         }
         int result = doctorService.updateDoctor(doctor);
         if (result > 0) {
