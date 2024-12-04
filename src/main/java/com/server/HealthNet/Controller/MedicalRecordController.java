@@ -73,7 +73,7 @@ public class MedicalRecordController {
     }
 
     @GetMapping("/patient/{id}")
-    @PreAuthorize("hasRole('STAFF')")
+    @PreAuthorize("hasRole('STAFF') or hasRole('DOCTOR')")
     public List<MedicalRecord> getmymedicalRecords(@PathVariable Long id) {
         return medicalRecordService.getmyMedicalRecords(id);
     }
