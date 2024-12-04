@@ -19,7 +19,14 @@ public class InventoryRepository {
         inventory.setInventory_id(rs.getLong("inventory_id"));
         inventory.setName(rs.getString("name"));
         inventory.setQuantity(rs.getLong("quantity"));
-        inventory.setExpiryDate(rs.getDate("expiry_date").toLocalDate());
+
+        // Safely handle nullable expiry_date
+        if (rs.getDate("expiry_date") != null) {
+            inventory.setExpiryDate(rs.getDate("expiry_date").toLocalDate());
+        } else {
+            inventory.setExpiryDate(null); // or set a default LocalDate if needed
+        }
+
         inventory.setDepartment_id(rs.getLong("department_id"));
         return inventory;
     }
@@ -36,12 +43,14 @@ public class InventoryRepository {
 
     public int save(Inventory inventory) {
         String sql = "INSERT INTO inventory (name, quantity, expiry_date, department_id) VALUES (?, ?, ?, ?)";
-        return jdbcTemplate.update(sql, inventory.getName(), inventory.getQuantity(), inventory.getExpiryDate(), inventory.getDepartment_id());
+        return jdbcTemplate.update(sql, inventory.getName(), inventory.getQuantity(), inventory.getExpiryDate(),
+                inventory.getDepartment_id());
     }
 
     public int update(Inventory inventory) {
         String sql = "UPDATE inventory SET name = ?, quantity = ?, expiry_date = ?, department_id = ? WHERE inventory_id = ?";
-        return jdbcTemplate.update(sql, inventory.getName(), inventory.getQuantity(), inventory.getExpiryDate(), inventory.getDepartment_id(), inventory.getInventory_id());
+        return jdbcTemplate.update(sql, inventory.getName(), inventory.getQuantity(), inventory.getExpiryDate(),
+                inventory.getDepartment_id(), inventory.getInventory_id());
     }
 
     public int deleteById(Long id) {
