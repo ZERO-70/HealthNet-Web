@@ -99,6 +99,7 @@ public class AvalibilityController {
         }
 
         // Proceed with the update
+        avalibility.toString();
         int result = service.updateAvalibility(doctorId, avalibility);
         return result > 0
                 ? new ResponseEntity<>("Availability Updated successfully", HttpStatus.OK)
