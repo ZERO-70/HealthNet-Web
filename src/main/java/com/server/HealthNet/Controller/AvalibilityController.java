@@ -54,7 +54,6 @@ public class AvalibilityController {
 
     @GetMapping("/getmine")
     @PreAuthorize("hasRole('DOCTOR')")
-    @CrossOrigin
     public ResponseEntity<Optional<Avalibility>> getmyAvalibility() {
         // Get the logged-in user's details
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
