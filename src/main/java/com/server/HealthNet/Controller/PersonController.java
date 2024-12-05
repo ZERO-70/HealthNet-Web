@@ -1,20 +1,29 @@
 package com.server.HealthNet.Controller;
 
+import com.server.HealthNet.Model.Patient;
 import com.server.HealthNet.Model.Person;
+import com.server.HealthNet.Model.UserAuthentication;
 import com.server.HealthNet.Service.PersonService;
+import com.server.HealthNet.Service.UserAuthenticationService;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/persons")
 @CrossOrigin(origins = "*")
 public class PersonController {
     private final PersonService personService;
+
+    @Autowired
+    private UserAuthenticationService userAuthenticationService;
 
     public PersonController(PersonService personService) {
         this.personService = personService;
@@ -42,11 +51,9 @@ public class PersonController {
                 : new ResponseEntity<>("Person Insertion failed", HttpStatus.NOT_FOUND);
     }
 
-    // dont want anyone to acess this
     // @PutMapping("/{id}")
     public ResponseEntity<String> updatePerson(@PathVariable Long id, @RequestBody Person person) {
-        // Assuming the service method handles the logic to check if the person exists
-        person.setId(id); // Set the ID of the person to be updated
+        person.setId(id);
         return personService.updatePerson(person) > 0
                 ? new ResponseEntity<>("Person updated successfully", HttpStatus.OK)
                 : new ResponseEntity<>("Person Update failed", HttpStatus.NOT_FOUND);
@@ -58,5 +65,24 @@ public class PersonController {
         return personService.deletePerson(id) > 0
                 ? new ResponseEntity<>("Person deleted successfully", HttpStatus.OK)
                 : new ResponseEntity<>("Person Deletion failed", HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping("/getmine")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Person> getmyperson() {
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserAuthentication userAuthentication = userAuthenticationService.getUserByUsername(username);
+        if (userAuthentication == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        Person person = personService.getPersonById(userAuthentication.getPersonId());
+
+        if (person != null) {
+            return new ResponseEntity<>(person, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(person, HttpStatus.NOT_FOUND);
+        }
     }
 }
