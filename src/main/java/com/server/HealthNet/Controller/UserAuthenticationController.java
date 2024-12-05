@@ -92,7 +92,7 @@ public class UserAuthenticationController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/personwith/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
 
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
