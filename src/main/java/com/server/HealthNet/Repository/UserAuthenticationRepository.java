@@ -59,6 +59,11 @@ public class UserAuthenticationRepository {
         return jdbcTemplate.update(sql, username);
     }
 
+    public int deleteByID(Long id) {
+        String sql = "DELETE FROM user_authentication WHERE person_id = ?";
+        return jdbcTemplate.update(sql, id);
+    }
+
     private static class UserAuthenticationRowMapper implements RowMapper<UserAuthentication> {
         @Override
         public UserAuthentication mapRow(ResultSet rs, int rowNum) throws SQLException {

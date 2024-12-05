@@ -34,7 +34,7 @@ public class UserAuthenticationController {
             UserAuthentication rAuthentication = userAuthenticationService.getUserByUsername(username);
 
             // Only ADMIN can create STAFF or ADMIN roles
-            if (userAuthentication.getRole() == Role.STAFF || userAuthentication.getRole() == Role.ADMIN) {
+            if (userAuthentication.getRole() == Role.STAFF) {
                 if (rAuthentication == null || rAuthentication.getRole() != Role.ADMIN) {
                     return ResponseEntity.status(403).build(); // Forbidden
                 }
@@ -89,6 +89,25 @@ public class UserAuthenticationController {
         }
 
         userAuthenticationService.deleteUser(username);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserAuthentication rAuthentication = userAuthenticationService.getUserByUsername(name);
+
+        if (id != rAuthentication.getPersonId() && rAuthentication.getRole() != Role.ADMIN) {
+            return ResponseEntity.status(403).build();
+        }
+
+        // admin cannot delete its self
+        if (id == rAuthentication.getPersonId() && rAuthentication.getRole() == Role.ADMIN) {
+            return ResponseEntity.status(403).build();
+        }
+
+        userAuthenticationService.deleteUserbyID(id);
         return ResponseEntity.ok().build();
     }
 

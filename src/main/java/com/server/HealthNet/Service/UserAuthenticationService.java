@@ -51,6 +51,10 @@ public class UserAuthenticationService {
         return userAuthenticationRepository.deleteByUsername(username);
     }
 
+    public int deleteUserbyID(Long id) {
+        return userAuthenticationRepository.deleteByID(id);
+    }
+
     public String verify(UserAuthentication userAuthentication) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 userAuthentication.getUsername(), userAuthentication.getPassword()));
