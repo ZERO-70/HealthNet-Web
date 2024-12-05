@@ -82,7 +82,7 @@ public class StaffController {
     }
 
     @PutMapping
-    @PreAuthorize("hasRole('STAFF')")
+    @PreAuthorize("hasRole('STAFF') or hasRole('ADMIN')")
     public ResponseEntity<String> updateStaff(@RequestBody Staff staff) {
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
