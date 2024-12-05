@@ -88,7 +88,7 @@ public class StaffController {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         UserAuthentication userAuthentication = userAuthenticationService.getUserByUsername(username);
         // Updated String comparison
-        if (userAuthentication.getPersonId() != staff.getId()) {
+        if (userAuthentication.getPersonId() != staff.getId() && userAuthentication.getRole() != Role.ADMIN) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
