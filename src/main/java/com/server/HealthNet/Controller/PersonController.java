@@ -51,7 +51,8 @@ public class PersonController {
                 : new ResponseEntity<>("Person Insertion failed", HttpStatus.NOT_FOUND);
     }
 
-    // @PutMapping("/{id}")
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> updatePerson(@PathVariable Long id, @RequestBody Person person) {
         person.setId(id);
         return personService.updatePerson(person) > 0
